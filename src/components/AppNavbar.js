@@ -6,6 +6,7 @@ import Nav from 'react-bootstrap/Nav';
 
 import { NavLink, Link } from 'react-router-dom';
 import UserContext from '../UserContext';
+import '../App.css';
 
 
 export default function AppNavbar() {
@@ -17,7 +18,7 @@ export default function AppNavbar() {
 	return (
 		<Navbar style={{ backgroundColor: '#ADD8E6' }} expand="lg" variant="light">
 			<Container fluid>
-				<Navbar.Brand as={Link} to="/">Finance Suite</Navbar.Brand>
+				<Navbar.Brand as={Link} to="/" className="cursive-font">Finance Suite</Navbar.Brand>
 				<Navbar.Toggle aria-controls="basic-navbar-nav"/>
 				<Navbar.Collapse id="basic-navbar-nav">
 					<Nav className="ms-auto">
@@ -32,6 +33,7 @@ export default function AppNavbar() {
 								</>
 							:
 								<>
+									<Nav.Link as={Link} to="/expenses">Expenses</Nav.Link>
 									<Nav.Link as={Link} to="/logout">Logout</Nav.Link>
 								</>
 								

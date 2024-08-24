@@ -12,6 +12,8 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Logout from './pages/Logout';
 import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import Expenses from './pages/Expenses';
 
 
 
@@ -63,6 +65,17 @@ function App() {
             retrieveUserDetails(storedToken);
         }
     }, []);
+
+
+    useEffect(() => {
+ 
+        const storedToken = localStorage.getItem('token');
+        if (storedToken) {
+            setToken(storedToken);
+
+            retrieveUserDetails(storedToken);
+        }
+    }, []);
     // the routes dont forget if u just see a white screen
     return (
         <UserProvider value={{ user, setUser, unsetUser }}>
@@ -75,6 +88,8 @@ function App() {
                       <Route path="/login" element={<Login />}  />
                       <Route path="/logout" element={<Logout />}  />
                       <Route path="/register" element={<Register />}  />
+                      <Route path="/dashboard" element={<Dashboard />}  />
+                      <Route path="/expenses" element={<Expenses />}  />
 
                     </Routes>
                 </Container>

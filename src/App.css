@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
+
+
 .App {
   text-align: center;
 }
@@ -46,4 +49,18 @@
 
 .cardHighlight{
   min-height: 100%;
+}
+
+.btn-responsive {
+    width: 100%; /* Full width by default */
+}
+
+@media (min-width: 768px) {
+    .btn-responsive {
+        width: 200px; /* Fixed width on larger screens */
+    }
+}
+
+.cursive-font {
+    font-family: 'Dancing Script', cursive;
 }
