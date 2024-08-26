@@ -34,6 +34,8 @@ export default function AppNavbar() {
 							:
 								<>
 									<Nav.Link as={Link} to="/expenses">Expenses</Nav.Link>
+									<Nav.Link as={Link} to="/incomes">Incomes</Nav.Link>
+									<Nav.Link as={Link} to="/profitloss">ProfitLoss</Nav.Link>
 									<Nav.Link as={Link} to="/logout">Logout</Nav.Link>
 								</>
 								

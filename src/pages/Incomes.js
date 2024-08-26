@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, ListGroup, Accordion, Button, Modal, Form, Spinner } from 'react-bootstrap';
 
-export default function Expenses() {
-    const [expenses, setExpenses] = useState([]);
+export default function Income() {
+    const [income, setIncome] = useState([]);
     const [sources, setSources] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true); // Loading state
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedExpense, setSelectedExpense] = useState(null);
-    const [newExpense, setNewExpense] = useState({
-        expenseName: '',
-        sourceId: '', // Source ID is no longer required
-        expenseDescription: '',
-        expenseAmount: '',
+    const [selectedIncome, setSelectedIncome] = useState(null);
+    const [newIncome, setNewIncome] = useState({
+        incomeName: '',
+        sourceId: '', // Source ID
+        incomeDescription: '',
+        incomeAmount: '',
         date: new Date().toISOString().slice(0, 10),
     });
 
@@ -30,9 +30,9 @@ export default function Expenses() {
                     return;
                 }
 
-                // Fetch expenses
-                const expenseResponse = await fetch(
-                    `${process.env.REACT_APP_API_BASE_URL}/expenses`,
+                // Fetch income
+                const incomeResponse = await fetch(
+                    `${process.env.REACT_APP_API_BASE_URL}/incomes`,
                     {
                         method: "GET",
                         headers: {
@@ -42,17 +42,17 @@ export default function Expenses() {
                     }
                 );
 
-                if (!expenseResponse.ok) {
-                    throw new Error(`HTTP error! Status: ${expenseResponse.status}`);
+                if (!incomeResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${incomeResponse.status}`);
                 }
 
-                const expenseData = await expenseResponse.json();
-                if (Array.isArray(expenseData)) {
-                    expenseData.sort((a, b) => new Date(b.date) - new Date(a.date));
-                    setExpenses(expenseData);
+                const incomeData = await incomeResponse.json();
+                if (Array.isArray(incomeData)) {
+                    incomeData.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    setIncome(incomeData);
                 } else {
-                    console.error("Unexpected expense data format");
-                    setError("Unexpected expense data format");
+                    console.error("Unexpected income data format");
+                    setError("Unexpected income data format");
                 }
 
                 // Fetch sources
@@ -95,63 +95,63 @@ export default function Expenses() {
         return source ? source.sourceName : 'Unknown';
     };
 
-    const groupByMonth = (expenses) => {
-        return expenses.reduce((months, expense) => {
-            const date = new Date(expense.date);
+    const groupByMonth = (income) => {
+        return income.reduce((months, record) => {
+            const date = new Date(record.date);
             const monthYear = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
             if (!months[monthYear]) {
                 months[monthYear] = {};
             }
 
             if (!months[monthYear][date.toLocaleDateString()]) {
-                months[monthYear][date.toLocaleDateString()] = { totalAmount: 0, expenses: [] };
+                months[monthYear][date.toLocaleDateString()] = { totalAmount: 0, income: [] };
             }
 
-            months[monthYear][date.toLocaleDateString()].totalAmount += expense.expenseAmount;
-            months[monthYear][date.toLocaleDateString()].expenses.push(expense);
+            months[monthYear][date.toLocaleDateString()].totalAmount += record.incomeAmount;
+            months[monthYear][date.toLocaleDateString()].income.push(record);
 
             return months;
         }, {});
     };
 
-    const groupedExpenses = groupByMonth(expenses);
+    const groupedIncome = groupByMonth(income);
 
     const handleModalClose = () => {
         setShowAddModal(false);
         setShowEditModal(false);
         setShowDeleteModal(false);
-        setSelectedExpense(null);
-        setNewExpense({
-            expenseName: '',
-            sourceId: '', // Source ID reset
-            expenseDescription: '',
-            expenseAmount: '',
+        setSelectedIncome(null);
+        setNewIncome({
+            incomeName: '',
+            sourceId: '',
+            incomeDescription: '',
+            incomeAmount: '',
             date: new Date().toISOString().slice(0, 10),
         });
     };
 
     const handleAddModalShow = () => setShowAddModal(true);
 
-    const handleEditModalShow = (expense) => {
-        setSelectedExpense(expense);
-        setNewExpense({
-            expenseName: expense.expenseName,
-            sourceId: expense.sourceId || '', // Handle cases where sourceId might be null
-            expenseDescription: expense.expenseDescription,
-            expenseAmount: expense.expenseAmount,
-            date: expense.date.slice(0, 10),
+    const handleEditModalShow = (record) => {
+        setSelectedIncome(record);
+        setNewIncome({
+            incomeName: record.incomeName,
+            sourceId: record.sourceId || '',
+            incomeDescription: record.incomeDescription,
+            incomeAmount: record.incomeAmount,
+            date: record.date.slice(0, 10),
         });
         setShowEditModal(true);
     };
 
-    const handleDeleteModalShow = (expense) => {
-        setSelectedExpense(expense);
+    const handleDeleteModalShow = (record) => {
+        setSelectedIncome(record);
         setShowDeleteModal(true);
     };
 
     const handleChange = (e) => {
-        setNewExpense({
-            ...newExpense,
+        setNewIncome({
+            ...newIncome,
             [e.target.name]: e.target.value,
         });
     };
@@ -167,7 +167,7 @@ export default function Expenses() {
             }
 
             const response = await fetch(
-                `${process.env.REACT_APP_API_BASE_URL}/expenses`,
+                `${process.env.REACT_APP_API_BASE_URL}/incomes`,
                 {
                     method: "POST",
                     headers: {
@@ -175,11 +175,11 @@ export default function Expenses() {
                         Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify({
-                        expenseName: newExpense.expenseName,
-                        sourceId: newExpense.sourceId || null, // Handle optional field
-                        expenseDescription: newExpense.expenseDescription,
-                        expenseAmount: newExpense.expenseAmount,
-                        date: newExpense.date,
+                        incomeName: newIncome.incomeName,
+                        sourceId: newIncome.sourceId || null,
+                        incomeDescription: newIncome.incomeDescription,
+                        incomeAmount: newIncome.incomeAmount,
+                        date: newIncome.date,
                     }),
                 }
             );
@@ -188,12 +188,12 @@ export default function Expenses() {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
-            const addedExpense = await response.json();
-            setExpenses([...expenses, addedExpense]);
+            const addedIncome = await response.json();
+            setIncome([...income, addedIncome]);
             handleModalClose();
         } catch (error) {
-            console.error("Error adding expense:", error);
-            setError("Error adding expense");
+            console.error("Error adding income:", error);
+            setError("Error adding income");
         }
     };
 
@@ -208,7 +208,7 @@ export default function Expenses() {
             }
 
             const response = await fetch(
-                `${process.env.REACT_APP_API_BASE_URL}/expenses/${selectedExpense._id}`,
+                `${process.env.REACT_APP_API_BASE_URL}/incomes/${selectedIncome._id}`,
                 {
                     method: "PATCH",
                     headers: {
@@ -216,11 +216,11 @@ export default function Expenses() {
                         Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify({
-                        expenseName: newExpense.expenseName,
-                        sourceId: newExpense.sourceId || null, // Ensure sourceId is null if not provided
-                        expenseDescription: newExpense.expenseDescription,
-                        expenseAmount: newExpense.expenseAmount,
-                        date: newExpense.date,
+                        incomeName: newIncome.incomeName,
+                        sourceId: newIncome.sourceId || null,
+                        incomeDescription: newIncome.incomeDescription,
+                        incomeAmount: newIncome.incomeAmount,
+                        date: newIncome.date,
                     }),
                 }
             );
@@ -229,14 +229,14 @@ export default function Expenses() {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
-            const updatedExpense = await response.json();
-            setExpenses(expenses.map(expense =>
-                expense._id === updatedExpense._id ? updatedExpense : expense
+            const updatedIncome = await response.json();
+            setIncome(income.map(record =>
+                record._id === updatedIncome._id ? updatedIncome : record
             ));
             handleModalClose();
         } catch (error) {
-            console.error("Error updating expense:", error);
-            setError("Error updating expense");
+            console.error("Error updating income:", error);
+            setError("Error updating income");
         }
     };
 
@@ -250,7 +250,7 @@ export default function Expenses() {
             }
 
             const response = await fetch(
-                `${process.env.REACT_APP_API_BASE_URL}/expenses/${selectedExpense._id}`,
+                `${process.env.REACT_APP_API_BASE_URL}/incomes/${selectedIncome._id}`,
                 {
                     method: "DELETE",
                     headers: {
@@ -264,35 +264,36 @@ export default function Expenses() {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
-            setExpenses(expenses.filter(expense => expense._id !== selectedExpense._id));
+            setIncome(income.filter(record => record._id !== selectedIncome._id));
             handleModalClose();
         } catch (error) {
-            console.error("Error deleting expense:", error);
-            setError("Error deleting expense");
+            console.error("Error deleting income:", error);
+            setError("Error deleting income");
         }
     };
 
+
     return (
         <Container className="mt-5">
-            <h1>Your Expenses:</h1>
+            <h1>Your Income:</h1>
             <Button variant="primary" onClick={handleAddModalShow} className="mb-3">
-                Add Expense
+                Add Income
             </Button>
             {loading ? (
                 <Spinner animation="border" />
             ) : error ? (
                 <p>{error}</p>
-            ) : Object.keys(groupedExpenses).length === 0 ? (
-                <p>No expenses found.</p>
+            ) : Object.keys(groupedIncome).length === 0 ? (
+                <p>No income found.</p>
             ) : (
                 <Accordion>
-                    {Object.keys(groupedExpenses).map((monthYear, index) => (
+                    {Object.keys(groupedIncome).map((monthYear, index) => (
                         <Accordion.Item key={monthYear} eventKey={`${index}`}>
                             <Accordion.Header>
                                 <div className="w-100 d-flex justify-content-between align-items-center">
                                     <h4>{monthYear}</h4>
                                     <span>Total: ₱{
-                                        Object.values(groupedExpenses[monthYear]).reduce(
+                                        Object.values(groupedIncome[monthYear]).reduce(
                                             (total, day) => total + day.totalAmount, 0
                                         ).toFixed(2)
                                     }</span>
@@ -300,42 +301,42 @@ export default function Expenses() {
                             </Accordion.Header>
                             <Accordion.Body>
                                 <Accordion>
-                                    {Object.keys(groupedExpenses[monthYear]).map((date, subIndex) => (
+                                    {Object.keys(groupedIncome[monthYear]).map((date, subIndex) => (
                                         <Accordion.Item key={date} eventKey={`${index}-${subIndex}`}>
                                             <Accordion.Header>
                                                 <div className="w-100 d-flex justify-content-between align-items-center">
                                                     <h5>{date}</h5>
                                                     <span>Total: ₱{
-                                                        groupedExpenses[monthYear][date].totalAmount.toFixed(2)
+                                                        groupedIncome[monthYear][date].totalAmount.toFixed(2)
                                                     }</span>
                                                 </div>
                                             </Accordion.Header>
                                             <Accordion.Body>
                                                 <Accordion>
-                                                    {groupedExpenses[monthYear][date].expenses.map(expense => (
-                                                        <Accordion.Item key={expense._id} eventKey={`expense-${expense._id}`}>
+                                                    {groupedIncome[monthYear][date].income.map(income => (
+                                                        <Accordion.Item key={income._id} eventKey={`income-${income._id}`}>
                                                             <Accordion.Header>
                                                                 <div className="w-100 d-flex justify-content-between align-items-center">
-                                                                    <h6>{expense.expenseName}</h6>
-                                                                    <span>₱{expense.expenseAmount.toFixed(2)}</span>
+                                                                    <h6>{income.incomeName}</h6>
+                                                                    <span>₱{income.incomeAmount.toFixed(2)}</span>
                                                                 </div>
                                                             </Accordion.Header>
                                                             <Accordion.Body>
                                                                 <div>
-                                                                    <p><strong>Description:</strong> {expense.expenseDescription}</p>
-                                                                    <p><strong>Source:</strong> {getSourceNameById(expense.sourceId)}</p>
+                                                                    <p><strong>Description:</strong> {income.incomeDescription}</p>
+                                                                    <p><strong>Source:</strong> {getSourceNameById(income.sourceId)}</p>
                                                                 </div>
                                                                 <div className="mt-3">
                                                                     <Button
                                                                         variant="warning"
-                                                                        onClick={() => handleEditModalShow(expense)}
+                                                                        onClick={() => handleEditModalShow(income)}
                                                                         className="me-2"
                                                                     >
                                                                         Edit
                                                                     </Button>
                                                                     <Button
                                                                         variant="danger"
-                                                                        onClick={() => handleDeleteModalShow(expense)}
+                                                                        onClick={() => handleDeleteModalShow(income)}
                                                                     >
                                                                         Delete
                                                                     </Button>
@@ -354,19 +355,19 @@ export default function Expenses() {
                 </Accordion>
             )}
 
-            {/* Add Expense Modal */}
+            {/* Add Income Modal */}
             <Modal show={showAddModal} onHide={handleModalClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Add Expense</Modal.Title>
+                    <Modal.Title>Add Income</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={handleAddSubmit}>
-                        <Form.Group controlId="formExpenseName">
-                            <Form.Label>Expense Name</Form.Label>
+                        <Form.Group controlId="formIncomeName">
+                            <Form.Label>Income Name</Form.Label>
                             <Form.Control
                                 type="text"
-                                name="expenseName"
-                                value={newExpense.expenseName}
+                                name="incomeName"
+                                value={newIncome.incomeName}
                                 onChange={handleChange}
                                 required
                             />
@@ -376,7 +377,7 @@ export default function Expenses() {
                             <Form.Control
                                 as="select"
                                 name="sourceId"
-                                value={newExpense.sourceId}
+                                value={newIncome.sourceId}
                                 onChange={handleChange}
                             >
                                 <option value="">Select Source (Optional)</option>
@@ -387,23 +388,23 @@ export default function Expenses() {
                                 ))}
                             </Form.Control>
                         </Form.Group>
-                        <Form.Group controlId="formExpenseDescription">
-                            <Form.Label>Expense Description</Form.Label>
+                        <Form.Group controlId="formIncomeDescription">
+                            <Form.Label>Income Description</Form.Label>
                             <Form.Control
                                 type="text"
-                                name="expenseDescription"
-                                value={newExpense.expenseDescription}
+                                name="incomeDescription"
+                                value={newIncome.incomeDescription}
                                 onChange={handleChange}
                                 required
                             />
                         </Form.Group>
-                        <Form.Group controlId="formExpenseAmount">
-                            <Form.Label>Expense Amount</Form.Label>
+                        <Form.Group controlId="formIncomeAmount">
+                            <Form.Label>Income Amount</Form.Label>
                             <Form.Control
                                 type="number"
                                 step="0.01"
-                                name="expenseAmount"
-                                value={newExpense.expenseAmount}
+                                name="incomeAmount"
+                                value={newIncome.incomeAmount}
                                 onChange={handleChange}
                                 required
                             />
@@ -413,31 +414,31 @@ export default function Expenses() {
                             <Form.Control
                                 type="date"
                                 name="date"
-                                value={newExpense.date}
+                                value={newIncome.date}
                                 onChange={handleChange}
                                 required
                             />
                         </Form.Group>
                         <Button variant="primary" type="submit" className="mt-3">
-                            Add Expense
+                            Add Income
                         </Button>
                     </Form>
                 </Modal.Body>
             </Modal>
 
-            {/* Edit Expense Modal */}
+            {/* Edit Income Modal */}
             <Modal show={showEditModal} onHide={handleModalClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Edit Expense</Modal.Title>
+                    <Modal.Title>Edit Income</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={handleEditSubmit}>
-                        <Form.Group controlId="formExpenseName">
-                            <Form.Label>Expense Name</Form.Label>
+                        <Form.Group controlId="formIncomeName">
+                            <Form.Label>Income Name</Form.Label>
                             <Form.Control
                                 type="text"
-                                name="expenseName"
-                                value={newExpense.expenseName}
+                                name="incomeName"
+                                value={newIncome.incomeName}
                                 onChange={handleChange}
                                 required
                             />
@@ -447,7 +448,7 @@ export default function Expenses() {
                             <Form.Control
                                 as="select"
                                 name="sourceId"
-                                value={newExpense.sourceId}
+                                value={newIncome.sourceId}
                                 onChange={handleChange}
                             >
                                 <option value="">Select Source (Optional)</option>
@@ -458,23 +459,23 @@ export default function Expenses() {
                                 ))}
                             </Form.Control>
                         </Form.Group>
-                        <Form.Group controlId="formExpenseDescription">
-                            <Form.Label>Expense Description</Form.Label>
+                        <Form.Group controlId="formIncomeDescription">
+                            <Form.Label>Income Description</Form.Label>
                             <Form.Control
                                 type="text"
-                                name="expenseDescription"
-                                value={newExpense.expenseDescription}
+                                name="incomeDescription"
+                                value={newIncome.incomeDescription}
                                 onChange={handleChange}
                                 required
                             />
                         </Form.Group>
-                        <Form.Group controlId="formExpenseAmount">
-                            <Form.Label>Expense Amount</Form.Label>
+                        <Form.Group controlId="formIncomeAmount">
+                            <Form.Label>Income Amount</Form.Label>
                             <Form.Control
                                 type="number"
                                 step="0.01"
-                                name="expenseAmount"
-                                value={newExpense.expenseAmount}
+                                name="incomeAmount"
+                                value={newIncome.incomeAmount}
                                 onChange={handleChange}
                                 required
                             />
@@ -484,7 +485,7 @@ export default function Expenses() {
                             <Form.Control
                                 type="date"
                                 name="date"
-                                value={newExpense.date}
+                                value={newIncome.date}
                                 onChange={handleChange}
                                 required
                             />
@@ -496,13 +497,13 @@ export default function Expenses() {
                 </Modal.Body>
             </Modal>
 
-            {/* Delete Expense Modal */}
+            {/* Delete Income Modal */}
             <Modal show={showDeleteModal} onHide={handleModalClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Delete Expense</Modal.Title>
+                    <Modal.Title>Delete Income</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>Are you sure you want to delete this expense?</p>
+                    <p>Are you sure you want to delete this income?</p>
                     <Button variant="danger" onClick={handleDeleteSubmit}>
                         Delete
                     </Button>

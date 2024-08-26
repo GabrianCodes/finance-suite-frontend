@@ -14,6 +14,8 @@ import Logout from './pages/Logout';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
+import Incomes from './pages/Incomes';
+import ProfitLoss from './pages/ProfitLoss';
 
 
 
@@ -90,6 +92,8 @@ function App() {
                       <Route path="/register" element={<Register />}  />
                       <Route path="/dashboard" element={<Dashboard />}  />
                       <Route path="/expenses" element={<Expenses />}  />
+                      <Route path="/incomes" element={<Incomes />}  />
+                      <Route path="/profitloss" element={<ProfitLoss />}  />
 
                     </Routes>
                 </Container>
