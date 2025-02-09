@@ -16,6 +16,8 @@ import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
 import Incomes from './pages/Incomes';
 import ProfitLoss from './pages/ProfitLoss';
+import Sources from './pages/Sources';
+import SourceTypes from './pages/SourceTypes';
 
 
 
@@ -94,6 +96,8 @@ function App() {
                       <Route path="/expenses" element={<Expenses />}  />
                       <Route path="/incomes" element={<Incomes />}  />
                       <Route path="/profitloss" element={<ProfitLoss />}  />
+                      <Route path="/sources" element={<Sources />}  />
+                      <Route path="/sourcetypes" element={<SourceTypes />}  />
 
                     </Routes>
                 </Container>

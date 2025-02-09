@@ -16,6 +16,7 @@ export default function Register() {
 	// State to determine whether submit button is enabled or not
 	const [isActive, setIsActive] = useState(false);
 
+
 	// Error states
 	const [usernameError, setUsernameError] = useState("");
 	const [emailError, setEmailError] = useState("");
