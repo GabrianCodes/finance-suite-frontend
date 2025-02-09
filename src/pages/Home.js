@@ -32,7 +32,7 @@ export default function Home() {
         data = {
             title: "Finance Suite",
             content: "Finance Simplified",
-            destination: "/dashboard",
+            destination: "/profitloss",
             label: "Go to Dashboard"
         };
     } else {
